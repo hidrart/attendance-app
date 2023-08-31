@@ -1,0 +1,24 @@
+// Phonska custom color
+$phonska-white: #ffffff;
+$phonska-primary: #1a5d1a;
+$phonska-secondary: #42641e;
+$phonska-tertiary: #edf9e1;
+$phonska-warning: #f1c93b;
+$phonska-table: #e1efd2;
+
+$phonska-border: #979c92;
+$phonska-gray: #858c7e;
+$phonska-lighter-gray: #a0a49b;
+
+$phonska-thmee: (
+    "primary": $phonska-primary,
+    "secondary": $phonska-secondary,
+    "tertiary": $phonska-tertiary,
+    "warning": $phonska-warning,
+    "border": $phonska-border,
+    "gray": $phonska-gray,
+    "table": $phonska-table,
+);
+
+// Extends Bootstrap's default variable
+$theme-colors: map-merge($theme-colors, $phonska-thmee);
