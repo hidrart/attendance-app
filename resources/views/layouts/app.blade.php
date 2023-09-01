@@ -11,7 +11,6 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-    @stack('scripts')
 </head>
 
 <body>
@@ -20,10 +19,14 @@
 
         <main class="py-4 bg-tertiary min-vh-100">
             <div class="container">
-                @yield('content')
+                <div class="mt-5">
+                    @yield('content')
+                </div>
             </div>
         </main>
     </div>
+
+    @stack('scripts')
 </body>
 
 </html>

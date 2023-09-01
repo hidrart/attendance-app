@@ -5,6 +5,7 @@ $phonska-secondary: #42641e;
 $phonska-tertiary: #edf9e1;
 $phonska-warning: #f1c93b;
 $phonska-table: #e1efd2;
+$phonska-muted: #c3d7ad;
 
 $phonska-border: #979c92;
 $phonska-gray: #858c7e;
@@ -18,6 +19,7 @@ $phonska-thmee: (
     "border": $phonska-border,
     "gray": $phonska-gray,
     "table": $phonska-table,
+    "muted": $phonska-muted,
 );
 
 // Extends Bootstrap's default variable

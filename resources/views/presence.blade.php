@@ -1,108 +1,112 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mt-5">
-        <div class="d-flex justify-content-between align-items-center mb-5">
-            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#presenceModal"
-                @if ($attendance->checkin && $attendance->checkout) disabled @endif>
-                <i class="bi bi-calendar-event me-2"></i>
-                {{ __('Absen') }}
-            </button>
-            @if (session('success'))
-                <p class="text-success fw-bold">{{ session('success') }}</p>
-            @endif
-        </div>
-
-        <h3 class="text-primary fw-bold mb-3">{{ __('List Absensi') }}</h3>
-
-        <div class="row">
-            <div class="col-12 col-lg-6 mb-4 mb-lg-0">
-                <div class="bg-table border border-2 border-border">
-                    <h4 class="text-center text-primary fw-bold py-4 border-bottom border-2 border-border mb-3">
-                        {{ __('Cek In') }}</h4>
-                    <div class="row p-4">
-                        <div class="col-12 mb-4">
-                            <img src="{{ $attendance->checkin?->photo }}" class="img-phonska" alt="checkin photo">
-                        </div>
-                        <div class="col-12">
-                            <p class="fw-bold"> Tanggal :
-                                {{ $attendance->checkin?->created_at->timezone('Asia/Jakarta')->isoFormat('dddd, DD MMMM YYYY') }}
-                            </p>
-                            <p class="fw-bold"> Jam :
-                                {{ $attendance->checkin?->created_at->timezone('Asia/Jakarta')->isoFormat('HH:mm:ss') }}
-                            </p>
-                            <p class="fw-bold"> Lokasi :
-                                {{ sprintf('%s, %s', $attendance->checkin?->latitude, $attendance->checkin?->longitude) }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#presenceModal"
+            @if ($attendance->checkin && $attendance->checkout) disabled @endif>
+            <i class="bi bi-calendar-event me-2"></i>
+            {{ __('Absen') }}
+        </button>
+        @if (session('success'))
+            <div class="text-primary fw-bold" role="alert">
+                {{ session('success') }}
             </div>
+        @elseif(session('error'))
+            <div class="text-danger fw-bold" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+    </div>
 
-            <div class="col-12 col-lg-6">
-                <div class="bg-table border border-2 border-border">
-                    <h4 class="text-center text-primary fw-bold py-4 border-bottom border-2 border-border mb-3">
-                        {{ __('Cek Out') }}</h4>
-                    <div class="row p-4">
-                        <div class="col-12 mb-4">
-                            <img src="{{ $attendance->checkout?->photo }}" class="img-phonska" alt="checkout photo">
-                        </div>
-                        <div class="col-12">
-                            <p class="fw-bold"> Tanggal :
-                                {{ $attendance->checkout?->created_at->timezone('Asia/Jakarta')->isoFormat('dddd, DD MMMM YYYY') }}
-                            </p>
-                            <p class="fw-bold"> Jam :
-                                {{ $attendance->checkout?->created_at->timezone('Asia/Jakarta')->isoFormat('HH:mm:ss') }}
-                            </p>
-                            <p class="fw-bold"> Lokasi :
-                                {{ sprintf('%s, %s', $attendance->checkout?->latitude, $attendance->checkout?->longitude) }}
-                            </p>
-                        </div>
+    <h3 class="text-primary fw-bold mb-3">{{ __('List Absensi') }}</h3>
+
+    <div class="row">
+        <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+            <div class="bg-table border border-2 border-border">
+                <h4 class="text-center text-primary fw-bold py-4 border-bottom border-2 border-border mb-3">
+                    {{ __('Cek In') }}</h4>
+                <div class="row p-4">
+                    <div class="col-12 mb-4">
+                        <img src="{{ $attendance->checkin?->photo }}" class="img-phonska" alt="checkin photo">
+                    </div>
+                    <div class="col-12">
+                        <p class="fw-bold"> Tanggal :
+                            {{ $attendance->checkin?->created_at->timezone('Asia/Jakarta')->isoFormat('dddd, DD MMMM YYYY') }}
+                        </p>
+                        <p class="fw-bold"> Jam :
+                            {{ $attendance->checkin?->created_at->timezone('Asia/Jakarta')->isoFormat('HH:mm:ss') }}
+                        </p>
+                        <p class="fw-bold"> Lokasi :
+                            {{ sprintf('%s, %s', $attendance->checkin?->latitude, $attendance->checkin?->longitude) }}
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal -->
-        <div class="modal fade" id="presenceModal" tabindex="-1" aria-labelledby="presenceModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-                <form method="POST" action="{{ route($attendance->checkin ? 'checkout' : 'checkin') }}"
-                    class="modal-content bg-tertiary">
-                    @csrf
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="presenceModalLabel">
-                            {{ $attendance->checkin ? 'Cek Out' : 'Cek In' }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="col-12 col-lg-6">
+            <div class="bg-table border border-2 border-border">
+                <h4 class="text-center text-primary fw-bold py-4 border-bottom border-2 border-border mb-3">
+                    {{ __('Cek Out') }}</h4>
+                <div class="row p-4">
+                    <div class="col-12 mb-4">
+                        <img src="{{ $attendance->checkout?->photo }}" class="img-phonska" alt="checkout photo">
                     </div>
-                    <div class="modal-body">
-                        <canvas id="canvas" class="d-none" width="720" height="540"></canvas>
-                        <div class="row">
-                            <div class="col-6">
-                                <video id="video" class="img-phonska w-100" autoplay></video>
-                                <img id="output" class="img-phonska d-none" />
-                            </div>
-                            <div class="col-6">
-                                <div id="map" class="img-phonska"></div>
-                            </div>
-                        </div>
-
-                        <input type="hidden" name="photo" id="photo" />
-                        <input type="hidden" name="latitude" id="latitude" />
-                        <input type="hidden" name="longitude" id="longitude" />
-                        <input type="hidden" name="accuracy" id="accuracy" />
-
-                        <div class="mt-3 d-flex justify-content-center gap-2">
-                            <button type="button" class="btn btn-secondary" id="capture">Capture</button>
-                            <button type="button" class="btn btn-light" id="reset">Reset</button>
-                        </div>
+                    <div class="col-12">
+                        <p class="fw-bold"> Tanggal :
+                            {{ $attendance->checkout?->created_at->timezone('Asia/Jakarta')->isoFormat('dddd, DD MMMM YYYY') }}
+                        </p>
+                        <p class="fw-bold"> Jam :
+                            {{ $attendance->checkout?->created_at->timezone('Asia/Jakarta')->isoFormat('HH:mm:ss') }}
+                        </p>
+                        <p class="fw-bold"> Lokasi :
+                            {{ sprintf('%s, %s', $attendance->checkout?->latitude, $attendance->checkout?->longitude) }}
+                        </p>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" id="submit">Save changes</button>
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </form>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="presenceModal" tabindex="-1" aria-labelledby="presenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <form method="POST" action="{{ route($attendance->checkin ? 'checkout' : 'checkin') }}"
+                class="modal-content bg-tertiary">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="presenceModalLabel">
+                        {{ $attendance->checkin ? 'Cek Out' : 'Cek In' }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <canvas id="canvas" class="d-none" width="720" height="540"></canvas>
+                    <div class="row">
+                        <div class="col-6">
+                            <video id="video" class="img-phonska w-100" autoplay></video>
+                            <img id="output" class="img-phonska d-none" />
+                        </div>
+                        <div class="col-6">
+                            <div id="map" class="img-phonska"></div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="photo" id="photo" />
+                    <input type="hidden" name="latitude" id="latitude" />
+                    <input type="hidden" name="longitude" id="longitude" />
+                    <input type="hidden" name="accuracy" id="accuracy" />
+
+                    <div class="mt-3 d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-secondary" id="capture">Capture</button>
+                        <button type="button" class="btn btn-light" id="reset">Reset</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="submit">Save changes</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
         </div>
     </div>
 

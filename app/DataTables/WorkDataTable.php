@@ -2,19 +2,17 @@
 
 namespace App\DataTables;
 
-use App\Models\User;
+use App\Models\Work;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
-use Yajra\DataTables\Html\SearchPane;
 use Yajra\DataTables\Services\DataTable;
 
-class UserDataTable extends DataTable
+class WorkDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -24,16 +22,27 @@ class UserDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', 'users.column.action')
+            ->addColumn('action', function ($work) {
+                return view('works.column.action', [
+                    'work' => $work
+                ]);
+            })
             ->setRowId('id');
     }
 
     /**
      * Get the query source of dataTable.
      */
-    public function query(User $model): QueryBuilder
+    public function query(Work $model): QueryBuilder
     {
-        return $model->newQuery()->with('role');
+        return $model
+            ->query()
+            ->when(request('frequency'), function ($query) {
+                $query->where('frequency', request('frequency'));
+            })
+            ->when(request('pic'), function ($query) {
+                $query->where('pic', request('pic'));
+            });
     }
 
     /**
@@ -42,15 +51,14 @@ class UserDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('user-table')
+            ->setTableId('work-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             ->dom('frtip')
-            ->orderBy(0)
+            ->orderBy(1, 'desc')
             ->parameters([
                 'scrollX' => true,
                 'responsive' => true,
-                'autoWidth' => false,
             ]);
     }
 
@@ -60,12 +68,22 @@ class UserDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->addClass('text-center'),
-            Column::make('name'),
-            Column::make('email'),
-            Column::make('role.description')->orderable(false)->addClass('text-center'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
+            Column::computed('action')
+                ->exportable(false)
+                ->printable(false)
+                ->width(60),
+            Column::make('date')->width(200),
+            Column::make('plant')->width(100),
+            Column::make('registration'),
+            Column::make('pic'),
+            Column::make('classification')->width(100),
+            Column::make('parameter')->width(200),
+            Column::make('wo'),
+            Column::make('jpp'),
+            Column::make('notification'),
+            Column::make('equipment'),
+            Column::make('frequency'),
+            Column::make('value'),
         ];
     }
 
@@ -74,6 +92,6 @@ class UserDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Users_' . date('YmdHis');
+        return 'Work_' . date('YmdHis');
     }
 }

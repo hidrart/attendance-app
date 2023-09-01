@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRecordRequest extends FormRequest
+class StoreActionPlanRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,10 +22,11 @@ class UpdateRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'accuracy' => 'required|numeric',
-            'photo' => 'required',
+            'photo' => 'nullable|image|max:2048',
+            'plan' => 'required|string',
+            'analysis' => 'required|string',
+            'recommendation' => 'required|string',
+            'status' => 'required|in:pending,ongoing,completed',
         ];
     }
 }

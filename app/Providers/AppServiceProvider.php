@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Yajra\DataTables\Html\Builder;
@@ -25,5 +26,6 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('role', function ($role) {
             return auth()->check() && auth()->user()->role->name === $role;
         });
+        Paginator::useBootstrap();
     }
 }

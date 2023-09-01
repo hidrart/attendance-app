@@ -10,15 +10,21 @@
                 <li class="nav-item @if (request()->routeIs('presence')) active @endif">
                     <a class="nav-link text-white" href="{{ route('presence') }}">{{ __('Record Presence') }}</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="#">{{ __('Outstanding Work') }}</a>
+
+                <li class="nav-item @if (request()->routeIs('works.*')) active @endif">
+                    <a class="nav-link text-white" href="{{ route('works.index') }}">{{ __('Outstanding Work') }}</a>
                 </li>
+
+                <li class="nav-item @if (request()->routeIs('actions.*')) active @endif">
+                    <a class="nav-link text-white" href="{{ route('actions.index') }}">{{ __('User Action') }}</a>
+                </li>
+
                 @role('admin')
                     <li class="nav-item @if (request()->routeIs('attendances.*')) active @endif">
                         <a class="nav-link text-white" href="{{ route('attendances.index') }}">{{ __('Attendance') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">{{ __('Logsheet') }}</a>
+                        <a class="nav-link text-white" href="{{ route('logsheet') }}">{{ __('Logsheet') }}</a>
                     </li>
                     <li class="nav-item @if (request()->routeIs('users.*')) active @endif">
                         <a class="nav-link text-white" href="{{ route('users.index') }}">{{ __('User') }}</a>

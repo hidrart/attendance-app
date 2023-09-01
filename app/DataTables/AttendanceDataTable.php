@@ -22,22 +22,31 @@ class AttendanceDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', 'attendances.column.action')
-            ->addColumn('user', function ($attendance) {
-                return view('attendances.column.user', [
-                    'user' => $attendance->user,
-                    'role' => $attendance->user->role
-                ]);
-            })
-            ->addColumn('checkin', function ($attendance) {
+            ->addColumn('checkin', function ($row) {
                 return view('attendances.column.checkin', [
-                    'checkin' => $attendance->checkin
+                    'checkin' => $row->checkin
                 ]);
             })
-            ->addColumn('checkout', function ($attendance) {
+            ->addColumn('checkout', function ($row) {
                 return view('attendances.column.checkout', [
-                    'checkout' => $attendance->checkout
+                    'checkout' => $row->checkout
                 ]);
+            })
+            ->addColumn('checkinlocation', function ($row) {
+                return $row->checkin ?
+                    sprintf(
+                        '%s, %s',
+                        $row->checkin?->latitude,
+                        $row->checkin?->longitude
+                    ) : '-';
+            })
+            ->addColumn('checkoutlocation', function ($row) {
+                return $row->checkout ?
+                    sprintf(
+                        '%s, %s',
+                        $row->checkout?->latitude,
+                        $row->checkout?->longitude
+                    ) : '-';
             })
             ->setRowId('id');
     }
@@ -47,7 +56,16 @@ class AttendanceDataTable extends DataTable
      */
     public function query(Attendance $model): QueryBuilder
     {
-        return $model->newQuery()->with(['user', 'user.role', 'checkin', 'checkout']);
+        return $model
+            ->query()
+            ->with(['user', 'user.role', 'checkin', 'checkout'])
+            ->when(request('role'), function ($query) {
+                $query->whereHas('user', function ($query) {
+                    $query->whereHas('role', function ($query) {
+                        $query->where('name', request('role'));
+                    });
+                });
+            });
     }
 
     /**
@@ -59,16 +77,11 @@ class AttendanceDataTable extends DataTable
             ->setTableId('attendance-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            //->dom('Bfrtip')
+            ->dom('frtip')
             ->orderBy(0, 'desc')
-            ->selectStyleSingle()
-            ->buttons([
-                Button::make('excel'),
-                Button::make('csv'),
-                Button::make('pdf'),
-                Button::make('print'),
-                Button::make('reset'),
-                Button::make('reload')
+            ->parameters([
+                'scrollX' => true,
+                'responsive' => true,
             ]);
     }
 
@@ -78,13 +91,31 @@ class AttendanceDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->width('60px'),
-            Column::computed('user'),
-            Column::make('updated_at')->width('20%')->title('Date'),
-            Column::computed('checkin')->width('20%'),
-            Column::computed('checkout')->width('20%'),
-            Column::computed('action')->width('60px')->exportable(false)->printable(false)->addClass('text-center'),
-
+            Column::make('user.name')->title('Name')->width(200),
+            Column::make('user.email')->title('Email'),
+            Column::make('user.role.description')
+                ->title('Role')
+                ->orderable(false)
+                ->addClass('text-center')->width(150),
+            Column::make('created_at')->title('Date')->width(200),
+            Column::computed('checkin')
+                ->orderable(false)
+                ->title('Check In')
+                ->width(200)
+                ->addClass('text-center'),
+            Column::computed('checkinlocation')
+                ->title('Location')
+                ->orderable(false)
+                ->addClass('text-center')->width(200),
+            Column::computed('checkout')
+                ->width(200)
+                ->title('Check Out')
+                ->orderable(false)
+                ->addClass('text-center'),
+            Column::computed('checkoutlocation')
+                ->title('Location')
+                ->orderable(false)
+                ->addClass('text-center')->width(200),
         ];
     }
 

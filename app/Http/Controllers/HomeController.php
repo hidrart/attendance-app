@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Work;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -50,5 +51,38 @@ class HomeController extends Controller
             })->load('checkin', 'checkout');
 
         return view('presence', compact('attendance'));
+    }
+
+    /**
+     * Show logsheet page.
+     *  
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function logsheet()
+    {
+        $works = Work::with('actions')
+            ->when(request()->has('status'), function ($query) {
+                $query->whereHas('actions', function ($query) {
+                    $query->where('status', request()->status);
+                });
+            })
+            ->get()
+            ->groupBy(function ($work) {
+                return Carbon::parse($work->date)->format('M d');
+            })
+            ->map(function ($work) {
+                return $work->reduce(function ($carry, $item) {
+                    return $carry + $item->actions->count();
+                }, 0);
+            });
+
+
+        $labels = $works->keys();
+        $data = $works->values();
+        return view('logsheet', [
+            'title' => request()->has('status') ? ucfirst(request()->status) . ' Action Plan' : 'All Action Plan',
+            'labels' => $labels,
+            'data' => $data,
+        ]);
     }
 }

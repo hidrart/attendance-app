@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Work;
+use App\Models\ActionPlan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sactum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+});
+
+Route::get('/works/{id}', function (string $id) {
+    return response()->json(Work::find($id));
+});
+
+Route::get('/actions/{id}', function (string $id) {
+    return response()->json(ActionPlan::find($id));
 });
