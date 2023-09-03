@@ -23,7 +23,7 @@
                     <li class="nav-item @if (request()->routeIs('attendances.*')) active @endif">
                         <a class="nav-link text-white" href="{{ route('attendances.index') }}">{{ __('Attendance') }}</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item @if (request()->routeIs('logsheet')) active @endif">
                         <a class="nav-link text-white" href="{{ route('logsheet') }}">{{ __('Logsheet') }}</a>
                     </li>
                     <li class="nav-item @if (request()->routeIs('users.*')) active @endif">
