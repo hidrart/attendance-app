@@ -346,7 +346,6 @@
                 .then(response => response.json())
                 .then(function(data) {
                     id.value = data.id;
-                    photo.value = data.photo;
                     plan.value = data.plan;
                     analysis.value = data.analysis;
                     recommendation.value = data.recommendation;
