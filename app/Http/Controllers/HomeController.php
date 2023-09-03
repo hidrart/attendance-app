@@ -70,6 +70,7 @@ class HomeController extends Controller
             ->groupBy(function ($work) {
                 return Carbon::parse($work->date)->format('M d');
             })
+            ->sortKeys()
             ->map(function ($work) {
                 return $work->reduce(function ($carry, $item) {
                     return $carry + $item->actions->count();
